@@ -1,10 +1,9 @@
 from dbHandler import *
-from Date import *
+from dateHandler import *
 import random as r
 
 def print_menu():
     print("1: print all customers details\n2: print all projects\n3: add a new customer\n4: add a new project\n5: exit")
-
 
 def get_queries(index, cust_id, proj_id):
     if index == 1:
@@ -20,15 +19,9 @@ def get_queries(index, cust_id, proj_id):
         cust_id, input("Enter first name: "), input("Enter last name: "), input("Enter phone number: "))
     elif index == 6:
         return "INSERT INTO projects(proj_id, proj_name, start_date, cust_id) VALUES('%d', '%s', '%s', '%d')" % (
-            proj_id, input("Enter project name: "), date_input(), cust_id)
+            proj_id, input("Enter project name: "), date_format(), cust_id)
     else:
         print("index out of bound")
-
-def date_input():
-    day, month, year = map(int, input('Enter start date in DD/MM/YYYY format').split('/'))
-    date1 = Date(day, month, year)
-    print(date1.print_date())
-    return date1.print_date()
 
 def main():
     choice = 0
