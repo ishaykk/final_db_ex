@@ -1,8 +1,16 @@
 from pymysql import *
-from tabulate import tabulate
+from tabulate import tabulate # to print sql tables
 
 class DbHandler:
     def __init__(self, conn_host, conn_user, conn_pw, conn_db, conn_cursor):
+        """
+        DatabaseHandler constructor
+        :param connection_host: Host to connect to
+        :param connection_user: Username to connect with
+        :param connection_password: Password to connect with
+        :param connection_db: Database to connect to
+        :param connection_cursor: Cursor to work with
+        """
         self.host = conn_host
         self.user = conn_user
         self.password = conn_pw
@@ -11,12 +19,23 @@ class DbHandler:
         self.connection = None
 
     def db_connection(self):
+        """
+        Method is responsible for database connection process
+        :return: No return value
+        """
         try:
             self.connection = connect(host=self.host, user=self.user, password = self.password, db = self.db, cursorclass = self.cursor)
         except MySQLError:
             print("DB Error")
 
     def execute_query(self, query, type_of_query, table):
+        """
+        Method executes a given query
+        :param query: Query to execute
+        :param type_of_query: "SELECT" or "INSERT"
+        :param table: Name of the table
+        :return: True if the query was executed successfully and False if not
+        """
         try:
             self.db_connection()
             if self.connection is not None:
@@ -24,9 +43,9 @@ class DbHandler:
                     cursor.execute(query)
                     if type_of_query == "SELECT":
                         res = cursor.fetchall()  # Saving a list of dictionaries where each dictionary is a record
-                        headers = {element: element for element in {field[0] for field in cursor.description}} # tabulate require a dictionary (each header has a key and value)
-                        print(tabulate(res, headers=headers, tablefmt='grid')) # print table with nice stlye
-                    elif type_of_query == "INSERT": # type 3/4 = INSERT query, commit is required
+                        headers = {element: element for element in {field[0] for field in cursor.description}} # tabulate requires a dict (each header has key and value)
+                        print(tabulate(res, headers=headers, tablefmt='grid')) # print table with nice style
+                    elif type_of_query == "INSERT": # INSERT query, commit is required
                         self.connection.commit()
         except IntegrityError:
             print("A new record couldn't be added")
@@ -35,7 +54,15 @@ class DbHandler:
             self.close_connection()  # Closing the opened connection
         return True
 
-    def search_cust(self, num, query, table, field):
+    def search_query(self, num, query, table, field):
+        """
+            Method executes a "SELECT" query
+            :param num: value to search
+            :param query: Query to execute
+            :param type_of_query: "SELECT" or "INSERT"
+            :param field: name of column
+            :return: True if the query was executed successfully and the "num" was found in column "field", false otherwise
+            """
         try:
             self.db_connection()
             if self.connection is not None:  # If the database connection was established successfully
@@ -51,10 +78,9 @@ class DbHandler:
                         return False
         except IntegrityError:
             print("A new record couldn't be added")
-            return False
+            exit()
         finally:
             self.close_connection()  # Closing the opened connection
-        return True
 
     def close_connection(self):
         """
