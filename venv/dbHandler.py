@@ -42,8 +42,8 @@ class DbHandler:
                 with self.connection.cursor() as cursor:
                     cursor.execute(query)
                     result = cursor.fetchone()
-                    num = int(num)
-                    if result[field] == num:
+                    print(type(result))
+                    if result is not None and result[field] == num: # check if query result is None and pk equal to num
                         print(table + str(num), "was found")
                         return True
                     else:
